@@ -1,270 +1,132 @@
 /* Anton Reinicke — personal site
-   Proportions measured from elenacasanovas.com (1024px viewport):
-     frame     24px gutter, 961px of content
-     columns   304px identity column | 48px gutter | 609px text column
-     photo     300 x 357 (5:6), 6px radius
-     body      17px / 27.2px line-height / #16202c
-     muted     #5b6675     link #1e66d0
-   Rules are drawn inside the frame, so they start and end with the content.
-   Light only. No build step. */
+   Proportions measured from nikiforovanina.github.io (1024px viewport):
+     columns  48px gutter; 290px photo column | 90px gap | 577px text column
+     photo    290 x 387 (3:4), square corners
+     body     18.4px, light weight, #1a1a1a
+     name     40px / 700, sits BELOW the photo
+     headings 25.6px / 500, in the text column (no left rail, no dividers)
+     links    same colour as the text, underlined — no blue anywhere
+   No header bar, no nav, no JavaScript. */
+
+@font-face { font-family: "Roboto"; font-style: normal; font-weight: 300;
+             src: url("assets/fonts/roboto-300.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Roboto"; font-style: normal; font-weight: 400;
+             src: url("assets/fonts/roboto-400.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Roboto"; font-style: normal; font-weight: 500;
+             src: url("assets/fonts/roboto-500.woff2") format("woff2"); font-display: swap; }
+@font-face { font-family: "Roboto"; font-style: normal; font-weight: 700;
+             src: url("assets/fonts/roboto-700.woff2") format("woff2"); font-display: swap; }
 
 :root {
-  --ink:    #16202c;
-  --muted:  #5b6675;
-  --link:   #1e66d0;
-  --rule:   #e0e4e9;
-  --bg:     #ffffff;
-  --chip:   #f4f6f8;
-  --black:  #000000;   /* true neutral; --ink is a dark navy */
+  --ink:   #1a1a1a;
+  --link:  #8a1c1c;   /* dark red: marks what is clickable */
+  --muted: #6a6a6a;
+  --rule:  #d8d8d8;
+  --bg:    #ffffff;
 
-  --serif: "Fraunces", Georgia, "Iowan Old Style", "Times New Roman", serif;
-  --sans:  "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-
-  --page: 1009px;
-  --pad:  24px;
-  --col:  304px;   /* identity column: photo, name, contact */
-  --gut:  48px;
-  --barh: 70px;
-  --headgap: 44px;  /* gap between a section heading and its content */
+  --sans: "Roboto", Helvetica, Arial, sans-serif;
+  --page: 1053px;   /* 48 + 957 + 48 */
+  --pad:  48px;
+  --col:  290px;    /* photo column */
+  --gap:  90px;
 }
 
 * { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.6;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
-p { margin: 0 0 1.1em; }
+p { margin: 0 0 1.05em; }
 p:last-child { margin-bottom: 0; }
 
-a { color: var(--link); text-decoration: none; }
-a:hover { text-decoration: underline; text-underline-offset: 2px; }
+/* dark red marks anything clickable */
+a { color: var(--link); text-decoration: underline;
+    text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
 
 .skip { position: absolute; left: -9999px; background: var(--ink); color: #fff;
         padding: 10px 16px; z-index: 60; }
 .skip:focus { left: 16px; top: 16px; }
 
-.frame { max-width: var(--page); margin: 0 auto; padding: 0 var(--pad); }
-
-/* ---------------- header: name left, nav right ---------------- */
-
-.bar { position: sticky; top: 0; z-index: 50; background: var(--bg); }
-
-.bar .frame {
-  position: relative;
-  height: var(--barh);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 24px;
-}
-/* Drawn inside the padding, so the rule starts at the photo's left edge and
-   ends at the text column's right edge — same span as the dividers below. */
-.bar .frame::after {
-  content: ""; position: absolute; bottom: 0;
-  left: var(--pad); right: var(--pad);
-  border-top: 1px solid var(--rule);
-}
-
-.wordmark {
-  font-family: var(--serif);
-  font-size: 28px; font-weight: 500; letter-spacing: 0.2px;
-  color: var(--ink); text-decoration: none; white-space: nowrap;
-}
-.wordmark:hover { text-decoration: none; }
-
-.bar nav { display: flex; gap: 26px; flex-wrap: wrap; }
-.bar nav a {
-  font-size: 16px; color: var(--ink); text-decoration: none;
-  white-space: nowrap; padding-bottom: 2px;
-  border-bottom: 2px solid transparent;
-}
-.bar nav a:hover   { border-bottom-color: var(--rule); }
-.bar nav a.current { border-bottom-color: var(--link); color: var(--link); }
-
-/* ---------------- two-column layout ---------------- */
-
-.layout { padding-top: 40px; padding-bottom: 56px; }
-
-/* Row one: photo column beside the bio. */
-.intro-row {
+.layout {
+  max-width: var(--page);
+  margin: 0 auto;
+  padding: 60px var(--pad) 72px;
   display: grid;
   grid-template-columns: var(--col) 1fr;
-  column-gap: var(--gut);
-}
-.identity { grid-column: 1; }
-.lead     { grid-column: 2; min-width: 0; }
-
-/* Everything below shares ONE grid, so column 1 auto-sizes to the widest
-   heading and every section's content starts on the same line. */
-.sections {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: var(--headgap);
-}
-.sections > h2 {
-  grid-column: 1;
-  margin: 0;
-  scroll-margin-top: calc(var(--barh) + 34px);
-}
-.sections > .panel { grid-column: 2; min-width: 0; }
-
-/* full-width divider: same left and right edges as the header rule */
-.div {
-  grid-column: 1 / -1;
-  border: 0; border-top: 1px solid var(--rule);
-  margin: 34px 0;
+  column-gap: var(--gap);
+  align-items: start;
 }
 
-/* ---------------- identity column ---------------- */
+/* ---------------- left column ---------------- */
 
-.portrait { margin: 0 0 18px; width: 100%; }   /* fills --col */
+.portrait { margin: 0 0 26px; width: 100%; }
 .portrait img {
-  /* height:auto is required — the width/height HTML attributes are
-     presentational hints that otherwise override aspect-ratio. */
-  width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover;
-  display: block; border-radius: 6px;
-}
-.portrait-slot {
-  width: 100%; aspect-ratio: 1 / 1; border-radius: 6px;
-  border: 1px solid var(--rule); background: var(--chip);
-  display: flex; align-items: center; justify-content: center;
-  color: var(--muted); font-size: 13px; letter-spacing: 1.6px;
-  text-transform: uppercase;
+  width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover;
+  display: block;
 }
 
 .identity h1 {
-  font-family: var(--serif);
-  font-size: 25.6px; font-weight: 500; line-height: 1.3;
-  margin: 0 0 6px; color: var(--ink);
+  font-size: 40px; font-weight: 700; letter-spacing: -0.3px;
+  line-height: 1.15; margin: 0 0 10px;
 }
-.identity .aff { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.5; }
-.identity .mail { margin: 14px 0 0; font-size: 15.2px; }
+.identity .aff { margin: 0 0 14px; color: var(--muted); font-size: 16px; line-height: 1.5; }
+.identity .meta { margin: 0; font-size: 16px; line-height: 1.9; }
+.identity .meta a { display: block; }
 
-.profiles { margin: 16px 0 0; display: flex; align-items: center; gap: 15px; }
-.profiles a {
-  display: inline-flex; color: var(--muted);
-  text-decoration: none; line-height: 0;
-}
-.profiles a:hover { color: var(--link); text-decoration: none; }
-.profiles a.pending { opacity: 0.45; cursor: help; }
-.profiles svg { width: 20px; height: 20px; display: block; fill: currentColor; }
+.profiles { margin: 18px 0 0; display: flex; align-items: center; gap: 15px; }
+.profiles a { display: inline-flex; color: var(--ink); text-decoration: none; line-height: 0; }
+.profiles a:visited { color: var(--ink); }
+.profiles a:hover { opacity: 0.6; }
+.profiles svg { width: 19px; height: 19px; display: block; fill: currentColor; }
 
-/* ---------------- headings ---------------- */
+/* ---------------- right column ---------------- */
+
+.body { min-width: 0; }
+.body .intro p { font-size: 18.4px; }
 
 h2 {
-  font-family: var(--serif);
-  font-size: 32px; font-weight: 500; line-height: 1.15;
-  margin: 0 0 18px; color: var(--ink);
+  font-size: 25.6px; font-weight: 500; line-height: 1.2;
+  margin: 38px 0 18px;
 }
-.lead h2 { margin-bottom: 14px; }
-.sections > h2 { padding-top: 1px; }
 
-.grouphead {
-  font-size: 13px; font-weight: 600; letter-spacing: 1.4px;
-  text-transform: uppercase; color: var(--muted);
-  margin: 0 0 14px;
-}
-.group { margin-bottom: 30px; }
-.group:last-child { margin-bottom: 0; }
-
-/* ---------------- papers ---------------- */
-
-.paper { margin-bottom: 22px; }
+.paper { margin-bottom: 30px; }
 .paper:last-child { margin-bottom: 0; }
+.paper .title { margin: 0 0 3px; font-size: 17px; font-weight: 500;
+                color: var(--ink); line-height: 1.45; letter-spacing: -0.1px; }
+.paper .co    { margin: 0; font-size: 17px; font-weight: 300; color: var(--muted); }
 
-.paper .title { margin: 0 0 2px; font-size: 17px; line-height: 1.45;
-                color: var(--black); font-weight: 600; letter-spacing: -0.1px; }
-.paper .title a { color: var(--link); }
-.paper .title.pending { color: var(--muted); font-style: italic; }
-.paper .note { margin: 0; font-size: 15.5px; font-style: italic; color: var(--ink); }
-.paper .co   { margin: 0; font-size: 15.5px; color: var(--muted); }
-
-details.abs { margin-top: 4px; }
-details.abs > summary {
-  cursor: pointer; list-style: none;
-  font-size: 14.5px; color: var(--muted);
-  display: inline-flex; align-items: center; gap: 7px; padding: 2px 0;
-}
-details.abs > summary::-webkit-details-marker { display: none; }
-details.abs > summary::before {
-  content: ""; flex: none; width: 0; height: 0;
-  border-left: 5px solid currentColor;
-  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
-  transition: transform 0.16s ease;
-}
-details.abs[open] > summary::before { transform: rotate(90deg); }
-details.abs > summary:hover { color: var(--link); }
-details.abs > summary:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; }
-details.abs .body {
-  margin: 8px 0 0; padding-left: 16px;
-  border-left: 2px solid var(--rule);
-  font-size: 15.5px; line-height: 1.68; color: var(--ink);
-}
-
-/* ---------------- cv + contact ---------------- */
-
-.cvline { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 4px; }
-.cta {
-  display: inline-block; padding: 9px 18px; border-radius: 4px;
-  background: var(--link); color: #fff; font-size: 15.5px; text-decoration: none;
-}
-.cta:hover { text-decoration: none; opacity: 0.9; }
-.cta.ghost { background: transparent; color: var(--link); border: 1px solid var(--rule); }
-.cta.ghost:hover { border-color: var(--link); opacity: 1; }
-
-.addr { color: var(--muted); font-size: 15.5px; line-height: 1.7; }
-
-/* ---------------- footer ---------------- */
-
-footer .frame { position: relative; padding-top: 18px; padding-bottom: 44px;
-                color: var(--muted); font-size: 14px; }
-footer .frame::before {
-  content: ""; position: absolute; top: 0;
-  left: var(--pad); right: var(--pad);
-  border-top: 1px solid var(--rule);
-}
-
-/* ---------------- draft markers (delete before launch) ---------------- */
-
-.draft-note, .tbd {
-  background: #fff6da; color: #7a5c00;
-  font-size: 13.5px; padding: 2px 8px; display: inline-block; font-style: normal;
-}
-.draft-note { margin-bottom: 12px; }
+/* a row of links under a paper: PDF | Slides | Abstract */
+.paper .links { margin: 3px 0 0; font-size: 16px; }
+.paper .links a + a::before { content: " | "; color: var(--muted); text-decoration: none; }
 
 /* ---------------- responsive ---------------- */
 
-@media (max-width: 900px) { :root { --col: 250px; --gut: 34px; --headgap: 30px; } }
+@media (max-width: 900px) {
+  :root { --pad: 32px; --col: 240px; --gap: 48px; }
+  body { font-size: 17px; }
+  .identity h1 { font-size: 34px; }
+}
 
 @media (max-width: 680px) {
   :root { --pad: 20px; }
-  body { font-size: 16.5px; }
-  .bar .frame { height: auto; padding-top: 12px; padding-bottom: 12px;
-                flex-direction: column; align-items: flex-start; gap: 10px; }
-  .bar nav { gap: 20px; }
-  .intro-row, .sections { grid-template-columns: 1fr; }
-  .sections > h2 { margin-bottom: 14px; }
-  .layout { padding-top: 28px; }
-  .identity, .lead, .panel { grid-column: 1; }
-  .identity { margin-bottom: 30px; }
-  .portrait { max-width: 240px; }
-  h2 { font-size: 27px; }
+  .layout { grid-template-columns: 1fr; padding-top: 36px; }
+  .portrait { max-width: 260px; }
+  .identity { margin-bottom: 34px; }
+  h2 { margin-top: 30px; }
 }
 
-/* ---------------- print ---------------- */
-
 @media print {
-  .bar, .skip, .draft-note, .profiles, .cta { display: none !important; }
-  body { font-size: 11pt; line-height: 1.45; }
-  .intro-row, .sections { display: block; }
-  a { color: #000; }
-  .panel { page-break-inside: avoid; }
+  .skip, .profiles { display: none !important; }
+  body { font-size: 11pt; }
+  .layout { display: block; }
+  a { text-decoration: none; }
 }
